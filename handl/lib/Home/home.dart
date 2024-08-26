@@ -81,9 +81,9 @@ class HomePage extends StatelessWidget {
                 onPressed: () {
                   Navigator.popAndPushNamed(context, AppRoutes.login);
                 },
-                child: Row(
+                child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
+                  children: [
                     Icon(Icons.logout),
                     SizedBox(
                         width: 5), // Optional spacing between icon and text

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:handl/Home/item_detail_modal.dart';
 
 class OrderDetailsModal extends StatelessWidget {
   final Map<String, dynamic> order;
@@ -24,14 +25,31 @@ class OrderDetailsModal extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            order['orderNumber'],
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
+          Stack(
+                alignment: Alignment.center, // Centers the text
+                children: [
+                  Center(
+                    child: Text(
+                      order['orderNumber'],
+                      style: const TextStyle(
+                          fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  Positioned(
+                    right: 0,
+                    child: IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                ],
+              ),
           const SizedBox(height: 10),
           Text('Status: ${order['status']}'),
           const SizedBox(height: 20),
-          _buildOrderItemsList(orderItems), // Build order items list
+          _buildOrderItemsList(context, orderItems), // Build order items list
           const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -50,7 +68,7 @@ class OrderDetailsModal extends StatelessWidget {
                 },
                 style: ElevatedButton.styleFrom(
                     foregroundColor: const Color.fromARGB(255, 6, 6, 6),
-                    backgroundColor: Colors.red),
+                    backgroundColor: Colors.red.shade300),
                 child: const Text('Delete Order'),
               ),
             ],
@@ -63,23 +81,45 @@ class OrderDetailsModal extends StatelessWidget {
   }
 
   // Method to build the list of order items
-  Widget _buildOrderItemsList(List<Map<String, String>> orderItems) {
+  Widget _buildOrderItemsList(
+      BuildContext context, List<Map<String, String>> orderItems) {
     return Column(
       children: orderItems.map((item) {
         final itemName = item.keys.first;
         final itemQuantity = item[itemName];
         return ListTile(
-            title: Text(itemName),
-            trailing: SizedBox(
-              width: 150.0,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Quantity: $itemQuantity'),
-                  ElevatedButton(onPressed: () {}, child: Text("data"))
-                ],
-              ),
-            ));
+          title: Text(itemName),
+          trailing: SizedBox(
+            width: 150.0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text('Quantity: $itemQuantity'),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    shape: const CircleBorder(),
+                    backgroundColor: Colors.teal.shade300,
+                    foregroundColor: Colors.white,
+                  ),
+                  onPressed: () {
+                    // Show the modal when the button is pressed
+                    showModalBottomSheet(
+                      context: context,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+                      builder: (_) => ItemDetailModal(
+                        itemName: itemName,
+                        itemQuantity: int.parse(itemQuantity ?? '0'),
+                      ),
+                    );
+                  },
+                  child: const Icon(Icons.checklist_sharp),
+                ),
+              ],
+            ),
+          ),
+        );
       }).toList(),
     );
   }
